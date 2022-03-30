@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+
+{% block head_title %}Your Online Bank of Choice{% endblock %}
+
+{% block content %}
+    <div class="container mx-auto flex flex-col md:flex-row items-center my-12 md:my-24">
+        <!--Left Col-->
+        <div class="flex flex-col w-full lg:w-1/2 justify-center items-start pt-12 pb-24 px-6">
+            <h1 class="font-bold text-4xl my-4" style="color: green;">Online Banking</h1>
+            <p class="leading-normal mb-4" style="color: red;">
+                Making life simpler and better for you.
+            </p>
+            <div>
+            <a href="{% url 'accounts:user_registration' %}" 
+                class="bg-transparent hover:bg-yellow-800 text-black-800 hover:text-white rounded shadow hover:shadow-lg py-2 px-4 border border-gray-900 hover:border-transparent">
+                Create an account
+            </a>
+            </div>
+        </div>
+        <!--Right Col-->
+        <div class="w-full lg:w-1/2 lg:py-6 text-center">
+            <h1 style="font-size: 15rem" class="font-black text-yellow-800">KES</h1>
+        </div>
+    </div>
+{% endblock %}
