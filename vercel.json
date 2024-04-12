@@ -1,7 +1,6 @@
 {
     "builds": [{
         "src": "banking_system/wsgi.py",
-        "use": "@ardnt/vercel-python-wsgi",
         "config": { "maxLambdaSize": "15mb" }
     }],
     "routes": [
