@@ -1,6 +1,9 @@
 from django.core.management.utils import get_random_secret_key
 from pathlib import Path
 import os
+# settings.py
+from dotenv import load_dotenv
+load_dotenv()
 
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -64,12 +67,23 @@ WSGI_APPLICATION = 'banking_system.wsgi.app'
 
 # Database
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'template1',
+        'USER': 'demo',
+        'PASSWORD': '1234',
     }
 }
+
 
 
 # Password validation
