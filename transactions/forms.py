@@ -36,7 +36,7 @@ class DepositForm(TransactionForm):
 
         if amount < min_deposit_amount:
             raise forms.ValidationError(
-                f'You need to deposit at least {min_deposit_amount} KSh'
+                f'You need to deposit at least KES {min_deposit_amount}'
             )
 
         return amount
@@ -56,17 +56,17 @@ class WithdrawForm(TransactionForm):
 
         if amount < min_withdraw_amount:
             raise forms.ValidationError(
-                f'You can withdraw at least {min_withdraw_amount} Ksh'
+                f'You can withdraw at least KES {min_withdraw_amount}'
             )
 
         if amount > max_withdraw_amount:
             raise forms.ValidationError(
-                f'You can withdraw at most {max_withdraw_amount} Ksh'
+                f'You can withdraw at most KES {max_withdraw_amount}'
             )
 
         if amount > balance:
             raise forms.ValidationError(
-                f'You have {balance} $ in your account. '
+                f'You have KES {balance} in your account. '
                 'You can not withdraw more than your account balance'
             )
 
