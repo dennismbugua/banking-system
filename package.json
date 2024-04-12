@@ -2,5 +2,8 @@
   "dependencies": {
     "global": "^4.4.0",
     "vercel": "^34.0.0"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
