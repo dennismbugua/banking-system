@@ -25,6 +25,7 @@ The concepts and technologies demonstrated in this project can be expanded and t
 
 ## Technologies Used:
 * Django: Powerful web framework for building scalable and secure applications.
+* PostgreSQL: Reliable and efficient relational database management system.
 * Python: Backend language for implementing business logic and data handling.
 * HTML/CSS: Frontend styling and user interface design.
 
