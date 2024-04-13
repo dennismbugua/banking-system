@@ -6,7 +6,8 @@
       "config": { 
         "maxLambdaSize": "15mb", 
         "runtime": "python3.9",
-        "buildCommand": "./build_files.sh"
+        "buildCommand": "sh build_files.sh",
+        "outputDirectory": "staticfiles"
       }
     },
     {
@@ -17,7 +18,7 @@
   "routes": [
     {
       "src": "/static/(.*)",
-      "dest": "/static/$1"
+      "dest": "/staticfiles/$1"
     },
     {
       "src": "/(.*)",
