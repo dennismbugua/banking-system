@@ -25,7 +25,7 @@
                             name="{{ field.name }}"
                             id="{{ field.id_for_label }}"
                             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            {% if field.value %}value="{{ field.value }}"{% endif %}
+                            {% if field.name == 'username' %}value="banking@online.com"{% endif %}
                         >
                     {% else %}
                         <input
@@ -33,7 +33,7 @@
                             name="{{ field.name }}"
                             id="{{ field.id_for_label }}"
                             class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            {% if field.value %}value="{{ field.value }}"{% endif %}
+                            {% if field.name == 'password' %}value="123456"{% endif %}
                         >
                     {% endif %}
                     {% if field.errors %}
@@ -43,6 +43,9 @@
                     {% endif %}
                 </div>
             {% endfor %}
+            <div class="mb-4 text-center text-gray-600">
+                <p>Use demo account </br>Email: <strong>banking@online.com</strong></br> Password: <strong>123456</strong></p>
+            </div>
             <div class="flex items-center justify-center mt-6">
                 <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                     Sign In
