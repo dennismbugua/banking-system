@@ -6,7 +6,7 @@ pip-selfcheck.json
 
 vercel.json
 build_files.sh
-venv
+venv/
 .env
 
 course_import.py
