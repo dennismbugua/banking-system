@@ -6,13 +6,9 @@
       "config": { 
         "maxLambdaSize": "15mb", 
         "runtime": "python3.9",
-        "buildCommand": "sh build_files.sh",
+        "buildCommand": "./build_files.sh",
         "outputDirectory": "staticfiles"
       }
-    },
-    {
-      "src": "build_files.sh",
-      "use": "@vercel/static-build"
     }
   ],
   "routes": [
