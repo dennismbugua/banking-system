@@ -13,6 +13,9 @@ Explore the demo using:
 * Username: `banking@online.com`
 * Password: `123456`
 
+Live Demo:
+Try out the live demo https://onlinebanking-system.vercel.app/
+
 ## Potential Real-World Applications:
 The concepts and technologies demonstrated in this project can be expanded and tailored for various real-life banking applications with tangible market value, including:
 
@@ -34,7 +37,7 @@ To run the project locally:
 + Set up environment variables.
 + Apply database migrations: `python manage.py migrate`
 + Start the development server: `python manage.py runserver`
-+ Access the application at http://localhost:8000
++ Access the application at `http://localhost:8000`
 
 ## Note:
 This demo project serves as a starting point for building sophisticated banking and financial applications. Explore the provided functionalities and consider how they can be enhanced and adapted to meet specific market demands and user needs. For inquiries or collaborations, please feel free to reach out!
