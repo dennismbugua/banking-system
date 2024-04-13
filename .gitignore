@@ -4,9 +4,6 @@ bin/
 include/
 pip-selfcheck.json
 
-vercel.json
-build_files.sh
-venv/
 .env
 
 course_import.py
