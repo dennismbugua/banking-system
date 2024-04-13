@@ -13,7 +13,6 @@ Explore the demo using:
 * Username: `banking@online.com`
 * Password: `123456`
 
-Live Demo:
 Try out the live demo https://onlinebanking-system.vercel.app/
 
 ## Potential Real-World Applications:
