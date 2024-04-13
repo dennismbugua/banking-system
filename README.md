@@ -10,8 +10,8 @@ This project showcases a foundational banking system built with Django, demonstr
 
 ## Demo Credentials:
 Explore the demo using:
-Username: banking@online.com
-Password: 123456
+* Username: `banking@online.com`
+* Password: `123456`
 
 ## Potential Real-World Applications:
 The concepts and technologies demonstrated in this project can be expanded and tailored for various real-life banking applications with tangible market value, including:
@@ -29,9 +29,9 @@ The concepts and technologies demonstrated in this project can be expanded and t
 ## Getting Started:
 To run the project locally:
 
-+ Clone the repository: `git clone https://github.com/your/repository.git`
++ Clone the repository: `git clone https://github.com/dennismbugua/banking-system.git`
 + Install dependencies: `pip install -r requirements.txt`
-+ Set up environment variables (if applicable).
++ Set up environment variables.
 + Apply database migrations: `python manage.py migrate`
 + Start the development server: `python manage.py runserver`
 + Access the application at http://localhost:8000
