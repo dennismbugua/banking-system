@@ -13,7 +13,8 @@ Explore the demo using:
 * Username: `banking@online.com`
 * Password: `123456`
 
-Try out the live demo https://onlinebanking-system.vercel.app/. ## For full experience, you can try to deposit, withdraw and check report updates
+Try out the live demo https://onlinebanking-system.vercel.app/
+## For full experience, you can try to deposit, withdraw and check report updates
 
 ## Potential Real-World Applications:
 The concepts and technologies demonstrated in this project can be expanded and tailored for various real-life banking applications with tangible market value, including:
