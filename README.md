@@ -44,3 +44,5 @@ To run the project locally:
 This demo project serves as a starting point for building sophisticated banking and financial applications. Explore the provided functionalities and consider how they can be enhanced and adapted to meet specific market demands and user needs. For inquiries or collaborations, please feel free to reach out!
 
 Transform your ideas into innovative solutions with Django and banking technology. 🚀
+
+# Read the full article guide here -> https://dennismbugua.co.ke/articles/247-cloud-banking-suite
