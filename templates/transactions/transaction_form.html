@@ -1,32 +1,974 @@
-{% extends 'core/base.html' %}
+{% extends 'core/base.html' %} {% block head_title %}{{ title }}{% endblock %}
+{% block head_extra %}
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
 
-{% block head_title %}{{ title }}{% endblock %}
+  /* Override base template container margins */
+  .lg\:container {
+    margin: 0 !important;
+    max-width: none !important;
+    padding: 0 !important;
+  }
 
-{% block content %}
-<h1 class="font-sans-serif font-bold text-3xl text-center pb-5 pt-10">{{ title }}</h1>
-<hr />
-<div class="w-full mt-5">
-    <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        {% csrf_token %}
+  body {
+    font-family: "Inter", sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
 
-        <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="amount">
-                Amount
-            </label>
-            <input
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight border rounded-md border-gray-500 focus:outline-none focus:shadow-outline"
-                name="amount" id="amount" type="number" required placeholder="Enter an amount">
-        </div>
-        {% if form.amount.errors %}
-        {% for error in form.amount.errors %}
-        <p class="text-red-600 text-sm italic pb-2">{{ error }}</p>
-        {% endfor %}
+  .transaction-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-top: 80px;
+  }
+
+  /* Responsive padding adjustments */
+  @media (max-width: 768px) {
+    .transaction-bg {
+      padding: 0.75rem;
+      padding-top: 70px;
+      align-items: flex-start;
+      padding-bottom: 2rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .transaction-bg {
+      padding: 0.5rem;
+      padding-top: 70px;
+      padding-bottom: 2rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .transaction-bg {
+      padding: 0.25rem;
+      padding-top: 60px;
+      padding-bottom: 1.5rem;
+    }
+  }
+
+  /* Floating background elements */
+  .floating-shapes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Responsive shape sizes */
+  .shape:nth-child(1) {
+    width: 60px;
+    height: 60px;
+    top: 15%;
+    left: 10%;
+    animation-delay: 0s;
+  }
+
+  .shape:nth-child(2) {
+    width: 40px;
+    height: 40px;
+    top: 25%;
+    right: 15%;
+    animation-delay: 2s;
+  }
+
+  .shape:nth-child(3) {
+    width: 80px;
+    height: 80px;
+    bottom: 25%;
+    left: 20%;
+    animation-delay: 4s;
+  }
+
+  .shape:nth-child(4) {
+    width: 35px;
+    height: 35px;
+    bottom: 15%;
+    right: 25%;
+    animation-delay: 1s;
+  }
+
+  .shape:nth-child(5) {
+    width: 55px;
+    height: 55px;
+    top: 40%;
+    left: 5%;
+    animation-delay: 3s;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    33% {
+      transform: translateY(-20px) rotate(120deg);
+    }
+    66% {
+      transform: translateY(10px) rotate(240deg);
+    }
+  }
+
+  /* Transaction card styling */
+  .transaction-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 10;
+    animation: slideInUp 0.8s ease-out;
+    overflow: hidden;
+    width: 100%;
+    max-width: 600px;
+    padding: 2.5rem;
+    margin: auto;
+  }
+
+  .transaction-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      #fbbf24,
+      #f59e0b,
+      transparent
+    );
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Header styling */
+  .transaction-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: fadeInDown 1s ease-out 0.3s both;
+  }
+
+  .transaction-title {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .transaction-subtitle {
+    color: #6b7280;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Form styling */
+  .transaction-form {
+    animation: fadeIn 1s ease-out 0.5s both;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Amount input styling */
+  .amount-group {
+    position: relative;
+    margin-bottom: 2.5rem;
+  }
+
+  .amount-label {
+    display: block;
+    color: #374151;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    transition: color 0.3s ease;
+  }
+
+  .amount-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .currency-symbol {
+    position: absolute;
+    left: 1.25rem;
+    color: #667eea;
+    font-weight: 600;
+    font-size: 1.25rem;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  .amount-input {
+    width: 100%;
+    padding: 1.25rem 1.25rem 1.25rem 3.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 18px;
+    font-size: 1.25rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+  }
+
+  .amount-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    transform: translateY(-2px);
+  }
+
+  .amount-input::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+  }
+
+  /* Balance display */
+  .balance-display {
+    background: linear-gradient(
+      135deg,
+      rgba(251, 191, 36, 0.1),
+      rgba(245, 158, 11, 0.1)
+    );
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.02);
+    }
+  }
+
+  .balance-label {
+    color: #92400e;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .balance-amount {
+    color: #78350f;
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+
+  /* Error message styling */
+  .error-message {
+    background: linear-gradient(
+      135deg,
+      rgba(239, 68, 68, 0.1),
+      rgba(220, 38, 38, 0.1)
+    );
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #dc2626;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    animation: shake 0.5s ease-in-out;
+    font-size: 0.875rem;
+  }
+
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-5px);
+    }
+    75% {
+      transform: translateX(5px);
+    }
+  }
+
+  /* Submit button styling */
+  .submit-button {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 16px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .submit-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.5s;
+  }
+
+  .submit-button:hover::before {
+    left: 100%;
+  }
+
+  .submit-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+  }
+
+  .submit-button:active {
+    transform: translateY(-1px);
+  }
+
+  /* Loading state */
+  .submit-button.loading {
+    position: relative;
+    color: transparent;
+  }
+
+  .submit-button.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+  }
+
+  @keyframes spin {
+    0% {
+      transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+      transform: translate(-50%, -50%) rotate(360deg);
+    }
+  }
+
+  /* Icon styling */
+  .transaction-icon {
+    width: 4rem;
+    height: 4rem;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    animation: iconFloat 3s ease-in-out infinite;
+  }
+
+  @keyframes iconFloat {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  /* Balance display */
+  .balance-display {
+    background: linear-gradient(
+      135deg,
+      rgba(251, 191, 36, 0.1),
+      rgba(245, 158, 11, 0.1)
+    );
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.02);
+    }
+  }
+
+  .balance-label {
+    color: #92400e;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .balance-amount {
+    color: #78350f;
+    font-size: 2rem;
+    font-weight: 800;
+  }
+
+  /* Responsive design */
+  @media (max-width: 1024px) {
+    .transaction-card {
+      max-width: 550px;
+      padding: 2rem;
+    }
+
+    .transaction-title {
+      font-size: 2.25rem;
+    }
+
+    .balance-amount {
+      font-size: 1.75rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .transaction-card {
+      max-width: 100%;
+      padding: 1.75rem;
+      margin: 0.5rem;
+      border-radius: 20px;
+    }
+
+    .transaction-title {
+      font-size: 2rem;
+    }
+
+    .transaction-icon {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 18px;
+    }
+
+    .balance-display {
+      padding: 1.25rem;
+    }
+
+    .balance-amount {
+      font-size: 1.5rem;
+    }
+
+    .amount-input {
+      font-size: 1.125rem;
+      padding: 1.125rem 1.125rem 1.125rem 3.25rem;
+    }
+
+    .currency-symbol {
+      left: 1.125rem;
+      font-size: 1.125rem;
+    }
+
+    .quick-amounts {
+      gap: 0.875rem;
+    }
+
+    .quick-amount-btn {
+      padding: 0.875rem;
+      font-size: 0.875rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .transaction-card {
+      padding: 1.5rem;
+      margin: 0.5rem;
+    }
+
+    .transaction-title {
+      font-size: 1.75rem;
+    }
+
+    .transaction-icon {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 16px;
+    }
+
+    .balance-display {
+      padding: 1rem;
+    }
+
+    .balance-label {
+      font-size: 0.875rem;
+    }
+
+    .balance-amount {
+      font-size: 1.25rem;
+    }
+
+    .amount-input {
+      font-size: 1rem;
+      padding: 1rem 1rem 1rem 3rem;
+    }
+
+    .currency-symbol {
+      left: 1rem;
+      font-size: 1rem;
+    }
+
+    .submit-button {
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .transaction-card {
+      padding: 1.25rem;
+      margin: 0.25rem;
+    }
+
+    .transaction-title {
+      font-size: 1.5rem;
+    }
+
+    .transaction-subtitle {
+      font-size: 0.875rem;
+    }
+
+    .quick-amounts {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+
+    .quick-amount-btn {
+      padding: 0.75rem;
+      font-size: 0.8125rem;
+    }
+
+    .amount-label {
+      font-size: 0.875rem;
+    }
+
+    .submit-button {
+      font-size: 0.9375rem;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .transaction-card {
+      padding: 1rem;
+    }
+
+    .transaction-title {
+      font-size: 1.375rem;
+    }
+
+    .balance-amount {
+      font-size: 1.125rem;
+    }
+
+    .amount-input {
+      padding: 0.875rem 0.875rem 0.875rem 2.75rem;
+      font-size: 0.9375rem;
+    }
+
+    .currency-symbol {
+      left: 0.875rem;
+      font-size: 0.9375rem;
+    }
+  }
+
+  /* Quick amount buttons */
+  .quick-amounts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .quick-amount-btn {
+    background: rgba(102, 126, 234, 0.1);
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    color: #667eea;
+    padding: 1rem;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+
+  .quick-amount-btn:hover {
+    background: rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+  }
+
+  /* Submit button styling */
+  .submit-button {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    font-weight: 600;
+    padding: 1.25rem 1.5rem;
+    border: none;
+    border-radius: 18px;
+    font-size: 1.125rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  @media (max-width: 480px) {
+    .quick-amounts {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="transaction-bg">
+  <!-- Floating background shapes -->
+  <div class="floating-shapes">
+    <div class="shape"></div>
+    <div class="shape"></div>
+    <div class="shape"></div>
+    <div class="shape"></div>
+    <div class="shape"></div>
+  </div>
+
+  <div class="transaction-card">
+    <!-- Header -->
+    <div class="transaction-header">
+      <div class="transaction-icon">
+        {% if 'Deposit' in title %}
+        <svg
+          class="w-8 h-8 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          ></path>
+        </svg>
+        {% else %}
+        <svg
+          class="w-8 h-8 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M20 12H4"
+          ></path>
+        </svg>
         {% endif %}
+      </div>
+      <h1 class="transaction-title">{{ title }}</h1>
+      <p class="transaction-subtitle">
+        Enter the amount you wish to {% if 'Deposit' in title %} deposit {% else
+        %} withdraw {% endif %}
+      </p>
+    </div>
+
+    <!-- Balance Display -->
+    <div class="balance-display">
+      <div class="balance-label">Current Account Balance</div>
+      <div class="balance-amount">KES {{ user.balance|floatformat:2 }}</div>
+    </div>
+
+    <!-- Transaction Form -->
+    <form method="post" class="transaction-form" id="transactionForm">
+      {% csrf_token %}
+
+      <!-- Quick Amount Buttons -->
+      <div class="quick-amounts">
         <button
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            type="submit">
-            Proceed
+          type="button"
+          class="quick-amount-btn"
+          onclick="setAmount(1000)"
+        >
+          KES 1,000
         </button>
+        <button
+          type="button"
+          class="quick-amount-btn"
+          onclick="setAmount(5000)"
+        >
+          KES 5,000
+        </button>
+        <button
+          type="button"
+          class="quick-amount-btn"
+          onclick="setAmount(10000)"
+        >
+          KES 10,000
+        </button>
+        <button
+          type="button"
+          class="quick-amount-btn"
+          onclick="setAmount(25000)"
+        >
+          KES 25,000
+        </button>
+        <button
+          type="button"
+          class="quick-amount-btn"
+          onclick="setAmount(50000)"
+        >
+          KES 50,000
+        </button>
+        <button
+          type="button"
+          class="quick-amount-btn"
+          onclick="setAmount(100000)"
+        >
+          KES 100,000
+        </button>
+      </div>
+
+      <!-- Amount Input -->
+      <div class="amount-group">
+        <label for="amount" class="amount-label">Amount</label>
+        <div class="amount-input-container">
+          <span class="currency-symbol">KES</span>
+          <input
+            type="number"
+            name="amount"
+            id="amount"
+            class="amount-input"
+            placeholder="0.00"
+            required
+            min="1"
+            step="0.01"
+          />
+        </div>
+
+        {% if form.amount.errors %} {% for error in form.amount.errors %}
+        <div class="error-message">
+          <div class="flex items-center">
+            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            {{ error }}
+          </div>
+        </div>
+        {% endfor %} {% endif %}
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="submit-button" id="submitBtn">
+        <span id="btnText">
+          {% if 'Deposit' in title %} 💰 Deposit Money {% else %} 💸 Withdraw
+          Money {% endif %}
+        </span>
+      </button>
     </form>
+  </div>
 </div>
+
+<script>
+  // Set quick amount
+  function setAmount(amount) {
+    document.getElementById("amount").value = amount;
+
+    // Add animation to the input
+    const input = document.getElementById("amount");
+    input.style.transform = "scale(1.05)";
+    setTimeout(() => {
+      input.style.transform = "scale(1)";
+    }, 200);
+  }
+
+  // Form submission animation
+  document
+    .getElementById("transactionForm")
+    .addEventListener("submit", function (e) {
+      const btn = document.getElementById("submitBtn");
+      const btnText = document.getElementById("btnText");
+
+      btn.classList.add("loading");
+      btnText.textContent = "Processing...";
+      btn.disabled = true;
+    });
+
+  // Input animations and formatting
+  document.getElementById("amount").addEventListener("input", function (e) {
+    const value = parseFloat(e.target.value);
+    if (value) {
+      e.target.style.color = "#667eea";
+      e.target.style.fontWeight = "600";
+    } else {
+      e.target.style.color = "#374151";
+      e.target.style.fontWeight = "500";
+    }
+  });
+
+  // Focus effects
+  document.getElementById("amount").addEventListener("focus", function () {
+    this.parentElement.style.transform = "scale(1.02)";
+  });
+
+  document.getElementById("amount").addEventListener("blur", function () {
+    this.parentElement.style.transform = "scale(1)";
+  });
+
+  // Number formatting
+  document.getElementById("amount").addEventListener("blur", function () {
+    const value = parseFloat(this.value);
+    if (value) {
+      this.value = value.toFixed(2);
+    }
+  });
+
+  // Prevent negative values
+  document.getElementById("amount").addEventListener("input", function () {
+    if (this.value < 0) {
+      this.value = 0;
+    }
+  });
+
+  // Add ripple effect to quick amount buttons
+  document.querySelectorAll(".quick-amount-btn").forEach((btn) => {
+    btn.addEventListener("click", function (e) {
+      const ripple = document.createElement("span");
+      const rect = this.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+
+      ripple.style.width = ripple.style.height = size + "px";
+      ripple.style.left = x + "px";
+      ripple.style.top = y + "px";
+      ripple.classList.add("ripple");
+
+      this.appendChild(ripple);
+
+      setTimeout(() => {
+        ripple.remove();
+      }, 600);
+    });
+  });
+
+  // Auto-focus amount input
+  window.addEventListener("load", function () {
+    setTimeout(() => {
+      document.getElementById("amount").focus();
+    }, 800);
+  });
+</script>
+
+<style>
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(102, 126, 234, 0.3);
+    transform: scale(0);
+    animation: rippleEffect 0.6s ease-out;
+    pointer-events: none;
+  }
+
+  @keyframes rippleEffect {
+    to {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+</style>
 {% endblock %}

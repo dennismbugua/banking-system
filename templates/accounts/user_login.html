@@ -1,57 +1,639 @@
 {% extends 'core/base.html' %}
 
-{% block head_title %}Banking System{% endblock %}
+{% block head_title %}Banking System - Login{% endblock %}
+
+{% block head_extra %}
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+  /* Override base template container margins */
+  .lg\:container {
+    margin: 0 !important;
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  body {
+    font-family: "Inter", sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  .login-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    overflow-x: hidden;
+  }
+
+  /* Responsive padding adjustments */
+  @media (min-width: 640px) {
+    .login-bg {
+      padding: 1rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .login-bg {
+      padding: 2rem;
+    }
+  }
+
+  /* Floating background elements */
+  .floating-shapes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    animation: float 6s ease-in-out infinite;
+  }
+
+  /* Responsive shape sizes */
+  .shape:nth-child(1) {
+    width: 40px;
+    height: 40px;
+    top: 10%;
+    left: 5%;
+    animation-delay: 0s;
+  }
+
+  .shape:nth-child(2) {
+    width: 30px;
+    height: 30px;
+    top: 20%;
+    right: 5%;
+    animation-delay: 2s;
+  }
+
+  .shape:nth-child(3) {
+    width: 50px;
+    height: 50px;
+    bottom: 20%;
+    left: 10%;
+    animation-delay: 4s;
+  }
+
+  .shape:nth-child(4) {
+    width: 25px;
+    height: 25px;
+    bottom: 10%;
+    right: 10%;
+    animation-delay: 1s;
+  }
+
+  /* Medium screens */
+  @media (min-width: 768px) {
+    .shape:nth-child(1) {
+      width: 60px;
+      height: 60px;
+      left: 8%;
+    }
+
+    .shape:nth-child(2) {
+      width: 45px;
+      height: 45px;
+      right: 8%;
+    }
+
+    .shape:nth-child(3) {
+      width: 75px;
+      height: 75px;
+      left: 15%;
+    }
+
+    .shape:nth-child(4) {
+      width: 40px;
+      height: 40px;
+      right: 15%;
+    }
+  }
+
+  /* Large screens */
+  @media (min-width: 1024px) {
+    .shape:nth-child(1) {
+      width: 80px;
+      height: 80px;
+      left: 10%;
+    }
+
+    .shape:nth-child(2) {
+      width: 60px;
+      height: 60px;
+      right: 10%;
+    }
+
+    .shape:nth-child(3) {
+      width: 100px;
+      height: 100px;
+      left: 20%;
+    }
+
+    .shape:nth-child(4) {
+      width: 50px;
+      height: 50px;
+      right: 20%;
+    }
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    33% {
+      transform: translateY(-20px) rotate(120deg);
+    }
+    66% {
+      transform: translateY(10px) rotate(240deg);
+    }
+  }
+
+  /* Login card styling */
+  .login-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 10;
+    animation: slideInUp 0.8s ease-out;
+    overflow: hidden;
+  }
+
+  .login-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      #fbbf24,
+      #f59e0b,
+      transparent
+    );
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Header styling */
+  .login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    animation: fadeInDown 1s ease-out 0.3s both;
+  }
+
+  .login-title {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+
+  .login-subtitle {
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Form styling */
+  .login-form {
+    animation: fadeIn 1s ease-out 0.5s both;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Input field styling */
+  .input-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+
+  .input-label {
+    display: block;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+  }
+
+  .input-field {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .input-field:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    transform: translateY(-1px);
+  }
+
+  .input-field:focus + .input-icon {
+    color: #667eea;
+    transform: scale(1.1);
+  }
+
+  /* Input icons */
+  .input-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+
+  /* Demo account info styling */
+  .demo-info {
+    background: linear-gradient(
+      135deg,
+      rgba(251, 191, 36, 0.1),
+      rgba(245, 158, 11, 0.1)
+    );
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.02);
+    }
+  }
+
+  .demo-title {
+    color: #92400e;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .demo-text {
+    color: #78350f;
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+
+  /* Button styling */
+  .login-button {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    font-weight: 600;
+    padding: 0.875rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .login-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.5s;
+  }
+
+  .login-button:hover::before {
+    left: 100%;
+  }
+
+  .login-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+  }
+
+  .login-button:active {
+    transform: translateY(0);
+  }
+
+  /* Error message styling */
+  .error-message {
+    background: linear-gradient(
+      135deg,
+      rgba(239, 68, 68, 0.1),
+      rgba(220, 38, 38, 0.1)
+    );
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #dc2626;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    animation: shake 0.5s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-5px);
+    }
+    75% {
+      transform: translateX(5px);
+    }
+  }
+
+  .field-error {
+    color: #dc2626;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  /* Loading state */
+  .loading {
+    position: relative;
+  }
+
+  .loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+  }
+
+  @keyframes spin {
+    0% {
+      transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+      transform: translate(-50%, -50%) rotate(360deg);
+    }
+  }
+
+  /* Responsive design */
+  @media (max-width: 640px) {
+    .login-card {
+      margin: 1rem;
+      padding: 1.5rem;
+    }
+
+    .login-title {
+      font-size: 1.75rem;
+    }
+  }
+
+  /* Security badge */
+  .security-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    color: #6b7280;
+    font-size: 0.75rem;
+    animation: fadeIn 1s ease-out 1s both;
+  }
+
+  .security-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 0.5rem;
+    color: #10b981;
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="max-w-md w-full bg-white shadow-md rounded-lg px-8 py-6">
-        {% if form.non_field_errors %}
-            {% for error in form.non_field_errors %}
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
-                    <p class="font-bold">Error!</p>
-                    <p>{{ error }}</p>
-                </div>
-            {% endfor %}
-        {% endif %}
-        <h1 class="text-3xl font-bold text-center mb-6">Sign In</h1>
-        <form method="post">
-            {% csrf_token %}
-            {% for field in form %}
-                <div class="mb-4">
-                    <label for="{{ field.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">{{ field.label }}</label>
-                    {% if field.field.widget.input_type == 'password' %}
-                        <input
-                            type="password"
-                            name="{{ field.name }}"
-                            id="{{ field.id_for_label }}"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            {% if field.name == 'username' %}value="banking@online.com"{% endif %}
-                        >
-                    {% else %}
-                        <input
-                            type="{{ field.widget.input_type }}"
-                            name="{{ field.name }}"
-                            id="{{ field.id_for_label }}"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            {% if field.name == 'password' %}value="123456"{% endif %}
-                        >
-                    {% endif %}
-                    {% if field.errors %}
-                        {% for error in field.errors %}
-                            <p class="text-red-600 text-sm italic mt-1">{{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            {% endfor %}
-            <div class="mb-4 text-center text-gray-600">
-                <p>Use demo account </br>Email: <strong>banking@online.com</strong></br> Password: <strong>123456</strong></p>
-            </div>
-            <div class="flex items-center justify-center mt-6">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    Sign In
-                </button>
-            </div>
-        </form>
+<div class="login-bg">
+  <!-- Floating background shapes -->
+  <div class="floating-shapes">
+    <div class="shape"></div>
+    <div class="shape"></div>
+    <div class="shape"></div>
+    <div class="shape"></div>
+  </div>
+
+  <div class="login-card max-w-md w-full mx-auto p-8">
+    <!-- Header -->
+    <div class="login-header">
+      <div class="flex justify-center mb-4">
+        <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center">
+          <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"></path>
+          </svg>
+        </div>
+      </div>
+      <h1 class="login-title">Welcome Back</h1>
+      <p class="login-subtitle">Sign in to your banking account</p>
     </div>
+
+    <!-- Error messages -->
+    {% if form.non_field_errors %}
+      {% for error in form.non_field_errors %}
+        <div class="error-message">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="font-semibold">Error: </span>{{ error }}
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Demo account info -->
+    <div class="demo-info">
+      <div class="demo-title">🚀 Demo Account Available</div>
+      <div class="demo-text">
+        <strong>Email:</strong> banking@online.com<br />
+        <strong>Password:</strong> 123456
+      </div>
+    </div>
+
+    <!-- Login form -->
+    <form method="post" class="login-form" id="loginForm">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="input-group">
+          <label for="{{ field.id_for_label }}" class="input-label">{{ field.label }}</label>
+          <div class="relative">
+            {% if field.field.widget.input_type == 'password' %}
+              <input
+                type="password"
+                name="{{ field.name }}"
+                id="{{ field.id_for_label }}"
+                class="input-field"
+                value="123456"
+                placeholder="Enter your password"
+              />
+              <div class="input-icon">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+              </div>
+            {% else %}
+              <input
+                type="{{ field.widget.input_type }}"
+                name="{{ field.name }}"
+                id="{{ field.id_for_label }}"
+                class="input-field"
+                value="banking@online.com"
+                placeholder="Enter your email"
+              />
+              <div class="input-icon">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                </svg>
+              </div>
+            {% endif %}
+          </div>
+          {% if field.errors %}
+            {% for error in field.errors %}
+              <p class="field-error">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="login-button" id="loginBtn">
+        <span id="btnText">Sign In to Account</span>
+      </button>
+    </form>
+
+    <!-- Security badge -->
+    <div class="security-badge">
+      <svg class="security-icon" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+      </svg>
+      Bank-level security & encryption
+    </div>
+  </div>
 </div>
+
+<script>
+  // Form submission animation
+  document.getElementById("loginForm").addEventListener("submit", function () {
+    const btn = document.getElementById("loginBtn");
+    const btnText = document.getElementById("btnText");
+
+    btn.classList.add("loading");
+    btnText.textContent = "Signing In...";
+    btn.disabled = true;
+  });
+
+  // Input field animations
+  document.querySelectorAll(".input-field").forEach((input) => {
+    input.addEventListener("focus", function () {
+      this.parentElement.classList.add("focused");
+    });
+
+    input.addEventListener("blur", function () {
+      this.parentElement.classList.remove("focused");
+    });
+  });
+
+  // Auto-fill demo credentials
+  window.addEventListener("load", function () {
+    setTimeout(() => {
+      const emailField = document.querySelector('input[name="username"]');
+      const passwordField = document.querySelector('input[name="password"]');
+
+      if (emailField && !emailField.value) {
+        emailField.value = "banking@online.com";
+      }
+      if (passwordField && !passwordField.value) {
+        passwordField.value = "123456";
+      }
+    }, 1000);
+  });
+</script>
 {% endblock %}

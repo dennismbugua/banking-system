@@ -1,16 +1,499 @@
-{% for message in messages %}
-<div class="bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-3 shadow-md mt-4" role="alert">
-    <div class="flex items-center">
-        <div class="mr-4">
-            <svg class="fill-current h-6 w-6 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path
-                    d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
-            </svg>
-        </div>
-        <div>
-            <p class="font-bold text-lg">Success!</p>
-            <p class="text-sm">{{ message }}</p>
-        </div>
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+  .messages-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+    width: 100%;
+    font-family: "Inter", sans-serif;
+  }
+
+  /* Message types */
+  .message-alert {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    margin-bottom: 12px;
+    padding: 16px 20px;
+    position: relative;
+    overflow: hidden;
+    animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: right center;
+  }
+
+  .message-alert::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, #10b981, #059669);
+    animation: shimmerVertical 2s ease-in-out infinite;
+  }
+
+  .message-alert::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(16, 185, 129, 0.6),
+      transparent
+    );
+    animation: shimmerHorizontal 3s ease-in-out infinite;
+  }
+
+  /* Success message styling */
+  .message-success {
+    border-left: 4px solid #10b981;
+  }
+
+  .message-success .message-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    animation: iconPulse 2s ease-in-out infinite;
+  }
+
+  .message-content {
+    flex: 1;
+    margin-left: 16px;
+  }
+
+  .message-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #047857;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+  }
+
+  .message-title::before {
+    content: "✨";
+    margin-right: 8px;
+    animation: sparkle 1.5s ease-in-out infinite;
+  }
+
+  .message-text {
+    font-size: 14px;
+    color: #059669;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .message-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(107, 114, 128, 0.1);
+    border: none;
+    border-radius: 8px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #6b7280;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+  }
+
+  .message-close:hover {
+    background: rgba(107, 114, 128, 0.2);
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  .message-close svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Progress bar */
+  .message-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #10b981, #059669);
+    border-radius: 0 0 16px 16px;
+    animation: progressBar 5s linear forwards;
+  }
+
+  /* Animations */
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(100%) scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  @keyframes slideOutRight {
+    to {
+      opacity: 0;
+      transform: translateX(100%) scale(0.8);
+    }
+  }
+
+  @keyframes iconPulse {
+    0%,
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+    }
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+    }
+  }
+
+  @keyframes sparkle {
+    0%,
+    100% {
+      transform: rotate(0deg) scale(1);
+    }
+    50% {
+      transform: rotate(180deg) scale(1.2);
+    }
+  }
+
+  @keyframes shimmerVertical {
+    0% {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+    50% {
+      background: linear-gradient(135deg, #34d399, #10b981);
+    }
+    100% {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+  }
+
+  @keyframes shimmerHorizontal {
+    0% {
+      right: -100%;
+    }
+    100% {
+      right: 100%;
+    }
+  }
+
+  @keyframes progressBar {
+    from {
+      width: 100%;
+    }
+    to {
+      width: 0%;
+    }
+  }
+
+  /* Floating particles */
+  .message-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(16, 185, 129, 0.6);
+    border-radius: 50%;
+    animation: floatParticle 3s ease-in-out infinite;
+  }
+
+  .particle:nth-child(1) {
+    top: 20%;
+    left: 20%;
+    animation-delay: 0s;
+  }
+
+  .particle:nth-child(2) {
+    top: 60%;
+    right: 20%;
+    animation-delay: 1s;
+  }
+
+  .particle:nth-child(3) {
+    bottom: 30%;
+    left: 60%;
+    animation-delay: 2s;
+  }
+
+  @keyframes floatParticle {
+    0%,
+    100% {
+      transform: translateY(0px) scale(1);
+      opacity: 0.6;
+    }
+    50% {
+      transform: translateY(-10px) scale(1.2);
+      opacity: 1;
+    }
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .messages-container {
+      top: 70px;
+      right: 16px;
+      left: 16px;
+      max-width: none;
+    }
+
+    .message-alert {
+      padding: 14px 16px;
+      border-radius: 12px;
+    }
+
+    .message-icon {
+      width: 40px !important;
+      height: 40px !important;
+      border-radius: 10px !important;
+    }
+
+    .message-title {
+      font-size: 15px;
+    }
+
+    .message-text {
+      font-size: 13px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .messages-container {
+      top: 65px;
+      right: 12px;
+      left: 12px;
+    }
+
+    .message-alert {
+      padding: 12px 14px;
+      border-radius: 10px;
+    }
+
+    .message-icon {
+      width: 36px !important;
+      height: 36px !important;
+      border-radius: 8px !important;
+    }
+
+    .message-content {
+      margin-left: 12px;
+    }
+
+    .message-title {
+      font-size: 14px;
+    }
+
+    .message-text {
+      font-size: 12px;
+    }
+  }
+
+  /* Error message variant (for future use) */
+  .message-error {
+    border-left: 4px solid #ef4444;
+  }
+
+  .message-error .message-icon {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+  }
+
+  .message-error .message-title {
+    color: #dc2626;
+  }
+
+  .message-error .message-text {
+    color: #ef4444;
+  }
+
+  .message-error::before {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+  }
+
+  .message-error::after {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(239, 68, 68, 0.6),
+      transparent
+    );
+  }
+
+  /* Warning message variant (for future use) */
+  .message-warning {
+    border-left: 4px solid #f59e0b;
+  }
+
+  .message-warning .message-icon {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+
+  .message-warning .message-title {
+    color: #d97706;
+  }
+
+  .message-warning .message-text {
+    color: #f59e0b;
+  }
+
+  .message-warning::before {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+
+  .message-warning::after {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(245, 158, 11, 0.6),
+      transparent
+    );
+  }
+</style>
+
+<div class="messages-container">
+  {% for message in messages %}
+  <div
+    class="message-alert message-success"
+    id="message-{{ forloop.counter }}"
+    data-auto-dismiss="true"
+  >
+    <!-- Floating particles -->
+    <div class="message-particles">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
     </div>
+
+    <!-- Progress bar for auto-dismiss -->
+    <div class="message-progress"></div>
+
+    <!-- Close button -->
+    <button
+      class="message-close"
+      onclick="dismissMessage('message-{{ forloop.counter }}')"
+    >
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        ></path>
+      </svg>
+    </button>
+
+    <!-- Message content -->
+    <div class="flex items-start">
+      <div class="message-icon">
+        <svg
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          class="w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 13l4 4L19 7"
+          ></path>
+        </svg>
+      </div>
+
+      <div class="message-content">
+        <p class="message-title">Transaction Successful!</p>
+        <p class="message-text">{{ message }}</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
 </div>
-{% endfor %}
+
+<script>
+  // Auto-dismiss messages after 5 seconds
+  document.addEventListener("DOMContentLoaded", function () {
+    const messages = document.querySelectorAll('[data-auto-dismiss="true"]');
+
+    messages.forEach((message, index) => {
+      setTimeout(() => {
+        if (message && message.parentNode) {
+          dismissMessage(message.id);
+        }
+      }, 5000 + index * 500); // Stagger dismissals by 500ms
+    });
+  });
+
+  // Manual dismiss function
+  function dismissMessage(messageId) {
+    const message = document.getElementById(messageId);
+    if (message) {
+      message.style.animation =
+        "slideOutRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards";
+      setTimeout(() => {
+        if (message.parentNode) {
+          message.parentNode.removeChild(message);
+        }
+      }, 400);
+    }
+  }
+
+  // Add sound effect (optional)
+  function playSuccessSound() {
+    // Create a subtle success sound using Web Audio API
+    const audioContext = new (window.AudioContext ||
+      window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
+
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.01,
+      audioContext.currentTime + 0.3
+    );
+
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  }
+
+  // Play sound on message appearance (optional)
+  document.addEventListener("DOMContentLoaded", function () {
+    const messages = document.querySelectorAll(".message-alert");
+    if (messages.length > 0) {
+      setTimeout(playSuccessSound, 100);
+    }
+  });
+</script>

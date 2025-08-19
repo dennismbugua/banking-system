@@ -1,110 +1,123 @@
-{% extends 'core/base.html' %}
-
-{% block head_title %}Banking System{% endblock %}
-
-{% block content %}
+{% extends 'core/base.html' %} {% block head_title %}Banking System{% endblock
+%} {% block content %}
 <div class="container mx-auto flex justify-center my-12">
-    <div class="w-full max-w-md bg-white shadow-md rounded px-8 pt-6 pb-8">
-        <h1 class="text-3xl font-bold text-center mb-5 text-teal-600">Register</h1>
-        <form method="post">
-            {% csrf_token %}
-            {% for hidden_field in registration_form.hidden_fields %}
-                {{ hidden_field }}
-            {% endfor %}
+  <div class="w-full max-w-md bg-white shadow-md rounded px-8 pt-6 pb-8">
+    <h1 class="text-3xl font-bold text-center mb-5 text-teal-600">Register</h1>
+    <form method="post">
+      {% csrf_token %} {% for hidden_field in registration_form.hidden_fields %}
+      {{ hidden_field }} {% endfor %}
 
-            <div class="mb-4">
-                <label for="{{ registration_form.first_name.id_for_label }}"
-                    class="block text-gray-700 text-sm font-bold mb-2">First Name</label>
-                {{ registration_form.first_name }}
-                {% if registration_form.first_name.errors %}
-                    {% for error in registration_form.first_name.errors %}
-                        <p class="text-red-600 text-sm italic">{{ error }}</p>
-                    {% endfor %}
-                {% endif %}
-            </div>
+      <div class="mb-4">
+        <label
+          for="{{ registration_form.first_name.id_for_label }}"
+          class="block text-gray-700 text-sm font-bold mb-2"
+          >First Name</label
+        >
+        {{ registration_form.first_name }} {% if
+        registration_form.first_name.errors %} {% for error in
+        registration_form.first_name.errors %}
+        <p class="text-red-600 text-sm italic">{{ error }}</p>
+        {% endfor %} {% endif %}
+      </div>
 
-            <div class="mb-4">
-                <label for="{{ registration_form.last_name.id_for_label }}"
-                    class="block text-gray-700 text-sm font-bold mb-2">Last Name</label>
-                {{ registration_form.last_name }}
-                {% if registration_form.last_name.errors %}
-                    {% for error in registration_form.last_name.errors %}
-                        <p class="text-red-600 text-sm italic">{{ error }}</p>
-                    {% endfor %}
-                {% endif %}
-            </div>
+      <div class="mb-4">
+        <label
+          for="{{ registration_form.last_name.id_for_label }}"
+          class="block text-gray-700 text-sm font-bold mb-2"
+          >Last Name</label
+        >
+        {{ registration_form.last_name }} {% if
+        registration_form.last_name.errors %} {% for error in
+        registration_form.last_name.errors %}
+        <p class="text-red-600 text-sm italic">{{ error }}</p>
+        {% endfor %} {% endif %}
+      </div>
 
-            <div class="mb-4">
-                <label for="{{ registration_form.email.id_for_label }}"
-                    class="block text-gray-700 text-sm font-bold mb-2">Email</label>
-                {{ registration_form.email }}
-                {% if registration_form.email.errors %}
-                    {% for error in registration_form.email.errors %}
-                        <p class="text-red-600 text-sm italic">{{ error }}</p>
-                    {% endfor %}
-                {% endif %}
-            </div>
+      <div class="mb-4">
+        <label
+          for="{{ registration_form.email.id_for_label }}"
+          class="block text-gray-700 text-sm font-bold mb-2"
+          >Email</label
+        >
+        {{ registration_form.email }} {% if registration_form.email.errors %} {%
+        for error in registration_form.email.errors %}
+        <p class="text-red-600 text-sm italic">{{ error }}</p>
+        {% endfor %} {% endif %}
+      </div>
 
-            <div class="mb-4">
-                <label for="{{ registration_form.account_type.id_for_label }}"
-                    class="block text-gray-700 text-sm font-bold mb-2">Account Type</label>
-                {{ registration_form.account_type }}
-                {% if registration_form.account_type.errors %}
-                    {% for error in registration_form.account_type.errors %}
-                        <p class="text-red-600 text-sm italic">{{ error }}</p>
-                    {% endfor %}
-                {% endif %}
-            </div>
+      <div class="mb-4">
+        <label
+          for="{{ registration_form.account_type.id_for_label }}"
+          class="block text-gray-700 text-sm font-bold mb-2"
+          >Account Type</label
+        >
+        {{ registration_form.account_type }} {% if
+        registration_form.account_type.errors %} {% for error in
+        registration_form.account_type.errors %}
+        <p class="text-red-600 text-sm italic">{{ error }}</p>
+        {% endfor %} {% endif %}
+      </div>
 
-            <div class="mb-4">
-                <label for="{{ registration_form.gender.id_for_label }}"
-                    class="block text-gray-700 text-sm font-bold mb-2">Gender</label>
-                {{ registration_form.gender }}
-                {% if registration_form.gender.errors %}
-                    {% for error in registration_form.gender.errors %}
-                        <p class="text-red-600 text-sm italic">{{ error }}</p>
-                    {% endfor %}
-                {% endif %}
-            </div>
+      <div class="mb-4">
+        <label
+          for="{{ registration_form.gender.id_for_label }}"
+          class="block text-gray-700 text-sm font-bold mb-2"
+          >Gender</label
+        >
+        {{ registration_form.gender }} {% if registration_form.gender.errors %}
+        {% for error in registration_form.gender.errors %}
+        <p class="text-red-600 text-sm italic">{{ error }}</p>
+        {% endfor %} {% endif %}
+      </div>
 
-            <div class="mb-4">
-                <label for="{{ registration_form.birth_date.id_for_label }}"
-                    class="block text-gray-700 text-sm font-bold mb-2">Birth Date</label>
-                {{ registration_form.birth_date }}
-                {% if registration_form.birth_date.errors %}
-                    {% for error in registration_form.birth_date.errors %}
-                        <p class="text-red-600 text-sm italic">{{ error }}</p>
-                    {% endfor %}
-                {% endif %}
-            </div>
+      <div class="mb-4">
+        <label
+          for="{{ registration_form.birth_date.id_for_label }}"
+          class="block text-gray-700 text-sm font-bold mb-2"
+          >Birth Date</label
+        >
+        {{ registration_form.birth_date }} {% if
+        registration_form.birth_date.errors %} {% for error in
+        registration_form.birth_date.errors %}
+        <p class="text-red-600 text-sm italic">{{ error }}</p>
+        {% endfor %} {% endif %}
+      </div>
 
-            <div class="mb-4">
-                <label for="{{ registration_form.password1.id_for_label }}"
-                    class="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                {{ registration_form.password1 }}
-                {% if registration_form.password1.errors %}
-                    {% for error in registration_form.password1.errors %}
-                        <p class="text-red-600 text-sm italic">{{ error }}</p>
-                    {% endfor %}
-                {% endif %}
-            </div>
+      <div class="mb-4">
+        <label
+          for="{{ registration_form.password1.id_for_label }}"
+          class="block text-gray-700 text-sm font-bold mb-2"
+          >Password</label
+        >
+        {{ registration_form.password1 }} {% if
+        registration_form.password1.errors %} {% for error in
+        registration_form.password1.errors %}
+        <p class="text-red-600 text-sm italic">{{ error }}</p>
+        {% endfor %} {% endif %}
+      </div>
 
-            <div class="mb-6">
-                <label for="{{ registration_form.password2.id_for_label }}"
-                    class="block text-gray-700 text-sm font-bold mb-2">Confirm Password</label>
-                {{ registration_form.password2 }}
-                {% if registration_form.password2.errors %}
-                    {% for error in registration_form.password2.errors %}
-                        <p class="text-red-600 text-sm italic">{{ error }}</p>
-                    {% endfor %}
-                {% endif %}
-            </div>
+      <div class="mb-6">
+        <label
+          for="{{ registration_form.password2.id_for_label }}"
+          class="block text-gray-700 text-sm font-bold mb-2"
+          >Confirm Password</label
+        >
+        {{ registration_form.password2 }} {% if
+        registration_form.password2.errors %} {% for error in
+        registration_form.password2.errors %}
+        <p class="text-red-600 text-sm italic">{{ error }}</p>
+        {% endfor %} {% endif %}
+      </div>
 
-            <div class="flex justify-center">
-                <button type="submit"
-                    class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Register</button>
-            </div>
-        </form>
-    </div>
+      <div class="flex justify-center">
+        <button
+          type="submit"
+          class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Register
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}
