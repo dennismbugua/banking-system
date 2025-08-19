@@ -26,14 +26,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
 
-# Environment Detection
+# Environment Detection - Enhanced for Vercel
 # WHY: Automatically detect if running in production or development
-IS_PRODUCTION = os.getenv('VERCEL_ENV') == 'production' or os.getenv('DJANGO_ENV') == 'production'
-IS_LOCAL = not IS_PRODUCTION and (
-    '127.0.0.1' in os.getenv('DJANGO_ALLOWED_HOSTS', '') or 
-    'localhost' in os.getenv('DJANGO_ALLOWED_HOSTS', '') or
-    not os.getenv('DJANGO_ALLOWED_HOSTS')
+IS_VERCEL = os.getenv('VERCEL_ENV') is not None
+IS_PRODUCTION = (
+    os.getenv('VERCEL_ENV') == 'production' or 
+    os.getenv('DJANGO_ENV') == 'production' or
+    IS_VERCEL
 )
+IS_LOCAL = not IS_PRODUCTION and not IS_VERCEL
 
 
 # DEBUG Configuration
@@ -43,15 +44,22 @@ IS_LOCAL = not IS_PRODUCTION and (
 DEBUG = IS_LOCAL or os.getenv("DEBUG", "False").lower() == "true"
 
 
-# Allowed Hosts Configuration
+# Allowed Hosts Configuration - Enhanced for Vercel
 # WHY: Defines which hosts/domains are allowed to serve this Django application
-if IS_PRODUCTION:
-    # PRODUCTION: Secure host configuration
-    ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", ".vercel.app").split(",")
+if IS_PRODUCTION or IS_VERCEL:
+    # PRODUCTION/VERCEL: Secure host configuration
+    allowed_hosts = os.getenv("DJANGO_ALLOWED_HOSTS", ".vercel.app").split(",")
+    # Add Vercel-specific hosts
+    allowed_hosts.extend([
+        '.vercel.app',
+        '.vercel-dns.com',
+        'localhost',
+        '127.0.0.1'
+    ])
+    ALLOWED_HOSTS = list(set(allowed_hosts))  # Remove duplicates
 else:
     # LOCAL DEVELOPMENT: Allow localhost and common development hosts
-    ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', '.ngrok.io', '.herokuapp.com'] + \
-                   os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",") if os.getenv("DJANGO_ALLOWED_HOSTS") else ['127.0.0.1', 'localhost', '0.0.0.0']
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', '.ngrok.io', '.herokuapp.com']
 
 
 # Application definition
@@ -118,20 +126,15 @@ TEMPLATES = [
 ]
 
 
-# WSGI Application
+# WSGI Application - Always use 'app' for Vercel compatibility
 # WHY: Points to the WSGI application for deployment
-if IS_PRODUCTION:
-    # PRODUCTION: Vercel-compatible WSGI application
-    WSGI_APPLICATION = 'banking_system.wsgi.app'
-else:
-    # LOCAL DEVELOPMENT: Standard Django WSGI application
-    WSGI_APPLICATION = 'banking_system.wsgi.application'
+WSGI_APPLICATION = 'banking_system.wsgi.app'
 
 
-# Database Configuration
+# Database Configuration - Optimized for Vercel + Supabase
 # WHY: Database settings determine where your data is stored and how to connect
-if IS_PRODUCTION or os.getenv("USE_POSTGRES", "False").lower() == "true":
-    # PRODUCTION: Supabase PostgreSQL database
+if IS_PRODUCTION or IS_VERCEL or os.getenv("USE_POSTGRES", "False").lower() == "true":
+    # PRODUCTION/VERCEL: Supabase PostgreSQL database
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -143,9 +146,8 @@ if IS_PRODUCTION or os.getenv("USE_POSTGRES", "False").lower() == "true":
             'OPTIONS': {
                 'sslmode': 'require',  # Required for Supabase connections
                 'connect_timeout': 60,
-                'options': '-c default_transaction_isolation=serializable'
             },
-            'CONN_MAX_AGE': 600,  # Connection pooling
+            'CONN_MAX_AGE': 0 if IS_VERCEL else 300,  # No connection pooling on Vercel serverless
         }
     }
 else:
@@ -189,23 +191,27 @@ USE_L10N = True   # Enable localization
 USE_TZ = True     # Enable timezone support
 
 
-# Static Files Configuration
+# Static Files Configuration - Optimized for Vercel
 # WHY: Configures how static assets are served and collected
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # Where collectstatic puts files
 
-if not IS_PRODUCTION:
+if IS_LOCAL:
     # LOCAL DEVELOPMENT: Additional static files directories
     STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# Static files storage for production
+# Static files storage optimized for Vercel
 # WHY: Optimizes static file serving for production
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+if IS_VERCEL or IS_PRODUCTION:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+else:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # WhiteNoise configuration for production static files
 # WHY: Efficiently serves static files in production without a separate server
-WHITENOISE_USE_FINDERS = True
-WHITENOISE_AUTOREFRESH = not IS_PRODUCTION
+WHITENOISE_USE_FINDERS = IS_LOCAL
+WHITENOISE_AUTOREFRESH = IS_LOCAL
+WHITENOISE_MAX_AGE = 31536000 if IS_PRODUCTION else 0  # 1 year cache for production
 
 
 # Banking System Specific Settings
@@ -222,17 +228,23 @@ LOGIN_URL = '/accounts/login/'
 LOGOUT_REDIRECT_URL = '/'
 
 
-# Session Configuration
+# Session Configuration - Optimized for serverless
 # WHY: Configures user session behavior
-SESSION_COOKIE_AGE = 86400  # 24 hours
+if IS_VERCEL:
+    # Vercel: Use database sessions for serverless
+    SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+    SESSION_COOKIE_AGE = 3600  # 1 hour for serverless
+else:
+    SESSION_COOKIE_AGE = 86400  # 24 hours for traditional hosting
+
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 
-# Celery Configuration (Task Queue)
+# Celery Configuration (Task Queue) - Disabled for Vercel
 # WHY: Handles background tasks like sending emails, processing transactions
-if IS_PRODUCTION:
-    # PRODUCTION: Redis-based task queue
+if IS_PRODUCTION and not IS_VERCEL:
+    # PRODUCTION (non-Vercel): Redis-based task queue
     CELERY_BROKER_URL = os.getenv('REDIS_URL', 'redis://localhost:6379')
     CELERY_RESULT_BACKEND = os.getenv('REDIS_URL', 'redis://localhost:6379')
     CELERY_ACCEPT_CONTENT = ['application/json']
@@ -242,7 +254,7 @@ if IS_PRODUCTION:
     CELERY_TASK_ALWAYS_EAGER = False
     CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 else:
-    # LOCAL DEVELOPMENT: Run tasks synchronously (no Redis required)
+    # LOCAL DEVELOPMENT or VERCEL: Run tasks synchronously
     CELERY_TASK_ALWAYS_EAGER = True        # Execute tasks immediately
     CELERY_TASK_EAGER_PROPAGATES = True    # Propagate exceptions immediately
 
@@ -252,23 +264,26 @@ else:
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 
-# Security Settings
+# Security Settings - Enhanced for Vercel
 # WHY: Enhanced security measures for production deployment
-if IS_PRODUCTION:
+if IS_PRODUCTION or IS_VERCEL:
     # PRODUCTION: Full security configuration
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-    SECURE_HSTS_SECONDS = 31536000  # 1 year
-    SECURE_SSL_REDIRECT = True
     X_FRAME_OPTIONS = 'DENY'
-    CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_HTTPONLY = True
     SESSION_COOKIE_HTTPONLY = True
-    CSRF_COOKIE_SAMESITE = 'Strict'
-    SESSION_COOKIE_SAMESITE = 'Strict'
+    
+    # HTTPS settings (disabled for Vercel as it handles HTTPS)
+    if not IS_VERCEL:
+        SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+        SECURE_HSTS_PRELOAD = True
+        SECURE_HSTS_SECONDS = 31536000  # 1 year
+        SECURE_SSL_REDIRECT = True
+        CSRF_COOKIE_SECURE = True
+        SESSION_COOKIE_SECURE = True
+        CSRF_COOKIE_SAMESITE = 'Strict'
+        SESSION_COOKIE_SAMESITE = 'Strict'
 else:
     # LOCAL DEVELOPMENT: Relaxed security for development
     SECURE_SSL_REDIRECT = False
@@ -276,37 +291,24 @@ else:
     SESSION_COOKIE_SECURE = False
 
 
-# Cache Configuration
+# Cache Configuration - Simplified for Vercel
 # WHY: Improves performance through caching
-if IS_PRODUCTION and os.getenv('REDIS_URL'):
-    # PRODUCTION: Redis cache
-    CACHES = {
-        'default': {
-            'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': os.getenv('REDIS_URL'),
-            'OPTIONS': {
-                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            }
-        }
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'banking-cache',
     }
-else:
-    # LOCAL DEVELOPMENT: Database cache
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-            'LOCATION': 'banking_cache_table',
-        }
-    }
+}
 
 
-# Logging Configuration
+# Logging Configuration - Simplified for Vercel
 # WHY: Helps with debugging and monitoring
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'format': '{levelname} {asctime} {module} {message}',
             'style': '{',
         },
         'simple': {
@@ -317,32 +319,17 @@ LOGGING = {
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'simple' if IS_LOCAL else 'verbose',
-        },
-        'file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR / 'logs' / 'django.log',
-            'maxBytes': 1024*1024*15,  # 15MB
-            'backupCount': 10,
-            'formatter': 'verbose',
-        } if IS_PRODUCTION else {
-            'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
     },
     'root': {
-        'handlers': ['console', 'file'] if IS_PRODUCTION else ['console'],
+        'handlers': ['console'],
         'level': 'INFO',
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'] if IS_PRODUCTION else ['console'],
+            'handlers': ['console'],
             'level': 'INFO',
-            'propagate': False,
-        },
-        'banking_system': {
-            'handlers': ['console', 'file'] if IS_PRODUCTION else ['console'],
-            'level': 'DEBUG' if IS_LOCAL else 'INFO',
             'propagate': False,
         },
     },
@@ -351,7 +338,7 @@ LOGGING = {
 
 # Email Configuration
 # WHY: Required for sending emails from the banking system
-if IS_PRODUCTION:
+if IS_PRODUCTION or IS_VERCEL:
     # PRODUCTION: SMTP email backend
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
@@ -373,11 +360,18 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
 
 
+# Vercel-specific optimizations
+if IS_VERCEL:
+    # Disable migrations on Vercel (should be done during build)
+    MIGRATION_MODULES = {
+        'accounts': None,
+        'core': None,
+        'transactions': None,
+    }
+
+
 # Environment-specific configurations
 if IS_PRODUCTION:
-    # Create logs directory if it doesn't exist
-    os.makedirs(BASE_DIR / 'logs', exist_ok=True)
-    
     # Additional production-only settings
     ADMINS = [
         ('Admin', os.getenv('ADMIN_EMAIL', 'banking@online.com')),

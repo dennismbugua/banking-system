@@ -1,13 +1,12 @@
 {
+  "version": 2,
   "builds": [
     {
       "src": "banking_system/wsgi.py",
       "use": "@vercel/python",
       "config": { 
         "maxLambdaSize": "15mb", 
-        "runtime": "python3.9",
-        "buildCommand": "./build_files.sh",
-        "outputDirectory": "staticfiles"
+        "runtime": "python3.9"
       }
     }
   ],
@@ -20,5 +19,14 @@
       "src": "/(.*)",
       "dest": "banking_system/wsgi.py"
     }
-  ]
+  ],
+  "env": {
+    "DJANGO_SETTINGS_MODULE": "banking_system.settings",
+    "PYTHONPATH": "/var/task"
+  },
+  "functions": {
+    "banking_system/wsgi.py": {
+      "maxDuration": 30
+    }
+  }
 }
