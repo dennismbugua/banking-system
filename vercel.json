@@ -2,6 +2,13 @@
   "version": 2,
   "builds": [
     {
+      "src": "build_files.sh",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "staticfiles"
+      }
+    },
+    {
       "src": "banking_system/wsgi.py",
       "use": "@vercel/python",
       "config": { 
@@ -13,7 +20,7 @@
   "routes": [
     {
       "src": "/static/(.*)",
-      "dest": "/static/$1"
+      "dest": "/staticfiles/$1"
     },
     {
       "src": "/(.*)",
@@ -21,8 +28,7 @@
     }
   ],
   "env": {
-    "DJANGO_SETTINGS_MODULE": "banking_system.settings",
-    "PYTHONPATH": "/var/task"
+    "DJANGO_SETTINGS_MODULE": "banking_system.settings"
   },
   "functions": {
     "banking_system/wsgi.py": {
