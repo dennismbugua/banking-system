@@ -1,10 +1,15 @@
 #!/bin/bash
 
-# Install Python dependencies
+echo "Starting build process..."
+
+# Install Python dependencies with better error handling
+echo "Installing dependencies..."
+pip install --upgrade pip
 pip install -r requirements.txt
 
+echo "Collecting static files..."
 # Run Django collectstatic command to gather static files
-python3.9 manage.py collectstatic --noinput
+python manage.py collectstatic --noinput --clear
 
 # Ensure the output directory exists
 mkdir -p staticfiles
