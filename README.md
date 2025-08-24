@@ -156,7 +156,7 @@ Ready to share your banking system with the world? The project includes:
 - `requirements.txt` for dependency management
 - `runtime.txt` for Python version specification
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/DVR3C6Elx54?si=UDn3OeqFTfFSMFw6" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![YT Video](https://github.com/dennismbugua/banking-system/blob/main/imgs/banking%20system%20YT%20screen%20shot.PNG?raw=true)](http://www.youtube.com/watch?v=DVR3C6Elx54 "Video Title")
 
 ## 🔐 Security Features
 
@@ -194,6 +194,7 @@ You now have a fully functional banking system running on your computer! Whether
 ---
 
 *⭐ If this tutorial helped you, please give the project a star!*
+
 
 
 
