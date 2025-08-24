@@ -126,7 +126,7 @@ The modular structure makes it easy to extend:
 - **Transactions app** - Deposit, withdrawal, and reporting
 - **Core app** - Shared functionality and templates
 
-![alt text](https://ibb.co/9HJCJZXJ)
+![FileStructure](https://github.com/dennismbugua/banking-system/blob/main/imgs/banking%20system%20file%20explorer%20screen%20shot.PNG?raw=true)
 
 ## 🔍 Troubleshooting Common Issues
 
@@ -194,5 +194,6 @@ You now have a fully functional banking system running on your computer! Whether
 ---
 
 *⭐ If this tutorial helped you, please give the project a star!*
+
 
 
