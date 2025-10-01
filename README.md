@@ -194,7 +194,3 @@ You now have a fully functional banking system running on your computer! Whether
 ---
 
 *⭐ If this tutorial helped you, please give the project a star!*
-
-
-
-
